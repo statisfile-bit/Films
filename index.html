@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>CodePen - A Pen by Statis File</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FilmStream</title>
+    <style>
+        /* RESET RINGAN */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif;
+            background: #000; 
+            color: white;
+        }
+        
+        /* HEADER MINIMAL */
+        .header {
+            background: #111;
+            padding: 12px 10px 8px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #222;
+        }
+        
+        .logo {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff375f;
+            margin-bottom: 10px;
+        }
+        
+        /* NAV SIMPLE */
+        .nav {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+        }
+        .nav::-webkit-scrollbar { display: none; }
+        
+        .tab {
+            background: #222;
+            color: #aaa;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .tab.active {
+            background: #ff375f;
+            color: white;
+        }
+        
+        /* MAIN CONTENT */
+        .main {
+            padding: 10px;
+            padding-bottom: 60px;
+        }
+        
+        /* SECTION */
+        .section {
+            margin-top: 20px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ff375f;
+        }
+        
+        /* FILM SCROLL RINGAN */
+        .scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 5px 0 10px;
+        }
+        .scroll::-webkit-scrollbar { display: none; }
+        
+        /* FILM CARD RINGAN */
+        .card {
+            min-width: 120px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .free {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: #ff375f;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .poster {
+            width: 120px;
+            height: 160px;
+            object-fit: cover;
+            background: #222;
+        }
+        
+        .info {
+            padding: 8px;
+        }
+        
+        .title {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .rating {
+            font-size: 11px;
+            color: gold;
+        }
+        
+        /* BOTTOM NAV */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #111;
+            border-top: 1px solid #222;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+        
+        .nav-btn {
+            color: #666;
+            text-align: center;
+            font-size: 10px;
+            text-decoration: none;
+        }
+        
+        .nav-btn.active {
+            color: #ff375f;
+        }
+        
+        .nav-btn i {
+            font-size: 18px;
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        /* LOADING SIMPLE */
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+        
+        /* ADMIN PAGE */
+        .admin-page {
+            display: none;
+            padding: 15px;
+        }
+        
+        .login-box {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 50px;
+        }
+        
+        .input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #ff375f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .btn-delete {
+            background: #dc3545;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        
+        .film-list {
+            margin-top: 20px;
+        }
+        
+        .film-item {
+            background: #1a1a1a;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo">FilmStream</div>
+        <nav class="nav">
+            <button class="tab active" onclick="showTab('home')">Home</button>
+            <button class="tab" onclick="showTab('admin')">Admin</button>
+            <button class="tab" onclick="showTab('search')">Cari</button>
+        </nav>
+    </header>
+
+    <!-- HOME PAGE -->
+    <main class="main" id="home-page">
+        <div class="loading" id="loading">Loading...</div>
+        <!-- Film akan dimuat disini -->
+    </main>
+
+    <!-- ADMIN PAGE -->
+    <div class="admin-page" id="admin-page">
+        <div id="login-form">
+            <div class="login-box">
+                <h2 style="text-align:center; margin-bottom:20px; color:#ff375f">Login Admin</h2>
+                <input type="password" id="password" class="input" placeholder="Password">
+                <button class="btn" onclick="login()">Login</button>
+            </div>
+        </div>
+        
+        <div id="admin-panel" style="display:none">
+            <h2 style="color:#ff375f; margin-bottom:15px;">Tambah Film Baru</h2>
+            
+            <input type="text" id="film-title" class="input" placeholder="Judul Film">
+            <input type="text" id="film-genre" class="input" placeholder="Genre (drama,action,anime)">
+            <input type="text" id="film-year" class="input" placeholder="Tahun">
+            <input type="text" id="film-rating" class="input" placeholder="Rating (1-10)">
+            <input type="text" id="film-thumb" class="input" placeholder="URL Gambar">
+            <input type="text" id="film-embed" class="input" placeholder="Embed URL (DoodStream)">
+            
+            <select id="film-type" class="input" onchange="toggleEpisodes()">
+                <option value="movie">Movie</option>
+                <option value="series">Series</option>
+            </select>
+            
+            <div id="episode-box" style="display:none; margin-top:10px;">
+                <textarea id="episodes" class="input" placeholder='Episode: [{"ep":1,"url":"link"}]' rows="3"></textarea>
+            </div>
+            
+            <button class="btn" onclick="addFilm()" style="margin-top:15px;">Tambah Film</button>
+            
+            <div class="film-list" id="film-list">
+                <h3 style="margin:20px 0 10px;">Daftar Film</h3>
+                <!-- List film akan dimuat disini -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH PAGE -->
+    <div class="admin-page" id="search-page" style="display:none">
+        <input type="text" id="search-box" class="input" placeholder="Cari film..." oninput="searchFilm()">
+        <div id="search-results" style="margin-top:15px;"></div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-btn active" onclick="showTab('home')">
+            <i class="fas fa-home"></i> Home
+        </a>
+        <a href="#" class="nav-btn" onclick="showTab('search')">
+            <i class="fas fa-search"></i> Cari
+        </a>
+        <a href="#" class="nav-btn" onclick="showTab('admin')">
+            <i class="fas fa-cog"></i> Admin
+        </a>
+        <a href="#" class="nav-btn" onclick="showTab('genre')">
+            <i class="fas fa-list"></i> Genre
+        </a>
+    </nav>
+
+    <script>
+        // ===== KONFIGURASI =====
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzUps0sqvFtFeHIdaTLJTll_PHK5-A1xIi_cpCWPtD-knKKGApOzaQj9RDw5ZOOFtSa/exec';
+        const ADMIN_PASS = 'admin123'; // Ganti password ini!
+        
+        let films = [];
+        let currentPage = 0;
+        
+        // ===== LOAD FILM DARI SHEETS =====
+        async function loadFilms() {
+            try {
+                const res = await fetch(API_URL + '?action=getFilms');
+                films = await res.json();
+                showFilms();
+            } catch(e) {
+                console.log('Error load:', e);
+                films = getDummyFilms();
+                showFilms();
+            }
+        }
+        
+        // ===== TAMPILKAN FILM DI HOME =====
+        function showFilms() {
+            const home = document.getElementById('home-page');
+            home.innerHTML = '';
+            
+            // Group by genre
+            const genres = {};
+            films.forEach(f => {
+                if (!genres[f.genre]) genres[f.genre] = [];
+                genres[f.genre].push(f);
+            });
+            
+            // Buat section per genre
+            for (const genre in genres) {
+                const section = document.createElement('div');
+                section.className = 'section';
+                
+                let filmsHTML = '';
+                genres[genre].slice(0, 10).forEach((film, i) => {
+                    filmsHTML += `
+                    <div class="card" onclick="playFilm(${film.id})">
+                        ${i < 2 ? '<div class="free">GRATIS</div>' : ''}
+                        <img src="${film.thumbnailurl || getDefaultImg(genre)}" 
+                             class="poster"
+                             onerror="this.src='https://via.placeholder.com/120x160/222/fff?text=FILM'">
+                        <div class="info">
+                            <div class="title">${film.title || 'Film'}</div>
+                            <div class="rating">★ ${film.rating || '0.0'}</div>
+                        </div>
+                    </div>
+                    `;
+                });
+                
+                section.innerHTML = `
+                <div class="section-title">${genre.toUpperCase()}</div>
+                <div class="scroll">${filmsHTML}</div>
+                `;
+                
+                home.appendChild(section);
+            }
+        }
+        
+        // ===== ADMIN FUNCTIONS =====
+        function login() {
+            const pass = document.getElementById('password').value;
+            if (pass === ADMIN_PASS) {
+                document.getElementById('login-form').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                loadFilmList();
+            } else {
+                alert('Password salah!');
+            }
+        }
+        
+        async function addFilm() {
+            const film = {
+                title: document.getElementById('film-title').value,
+                genre: document.getElementById('film-genre').value,
+                year: document.getElementById('film-year').value,
+                rating: document.getElementById('film-rating').value,
+                thumbnail: document.getElementById('film-thumb').value,
+                embed: document.getElementById('film-embed').value,
+                type: document.getElementById('film-type').value,
+                episodes: document.getElementById('episodes').value
+            };
+            
+            // Validasi
+            if (!film.title || !film.genre) {
+                alert('Judul dan genre wajib diisi!');
+                return;
+            }
+            
+            try {
+                const params = new URLSearchParams();
+                params.append('password', ADMIN_PASS);
+                for (const key in film) {
+                    params.append(key, film[key]);
+                }
+                
+                const res = await fetch(API_URL + '?action=addFilm&' + params.toString());
+                const result = await res.json();
+                
+                if (result.success) {
+                    alert('Film berhasil ditambahkan!');
+                    // Reset form
+                    ['film-title','film-genre','film-year','film-rating','film-thumb','film-embed','episodes']
+                        .forEach(id => document.getElementById(id).value = '');
+                    
+                    // Reload film list
+                    loadFilmList();
+                    loadFilms(); // Update home page
+                } else {
+                    alert('Error: ' + (result.error || 'Unknown error'));
+                }
+            } catch(e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        async function loadFilmList() {
+            try {
+                const res = await fetch(API_URL + '?action=getAllFilms');
+                const allFilms = await res.json();
+                
+                let html = '';
+                allFilms.forEach(f => {
+                    html += `
+                    <div class="film-item">
+                        <div>
+                            <strong>${f.title}</strong><br>
+                            <small>${f.genre} • ${f.year}</small>
+                        </div>
+                        <button class="btn btn-delete" onclick="deleteFilm(${f.id})">Hapus</button>
+                    </div>
+                    `;
+                });
+                
+                document.getElementById('film-list').innerHTML = `
+                <h3 style="margin:20px 0 10px;">Daftar Film (${allFilms.length})</h3>
+                ${html || '<p>Tidak ada film</p>'}
+                `;
+            } catch(e) {
+                console.log('Error load list:', e);
+            }
+        }
+        
+        async function deleteFilm(id) {
+            if (!confirm('Yakin hapus film?')) return;
+            
+            try {
+                const res = await fetch(API_URL + `?action=deleteFilm&id=${id}&password=${ADMIN_PASS}`);
+                const result = await res.json();
+                
+                if (result.success) {
+                    alert('Film dihapus!');
+                    loadFilmList();
+                    loadFilms();
+                }
+            } catch(e) {
+                alert('Error: ' + e.message);
+            }
+        }
+        
+        function toggleEpisodes() {
+            const type = document.getElementById('film-type').value;
+            document.getElementById('episode-box').style.display = 
+                type === 'series' ? 'block' : 'none';
+        }
+        
+        // ===== SEARCH FUNCTION =====
+        function searchFilm() {
+            const query = document.getElementById('search-box').value.toLowerCase();
+            const results = films.filter(f => 
+                f.title.toLowerCase().includes(query) ||
+                f.genre.toLowerCase().includes(query)
+            );
+            
+            let html = '';
+            results.forEach(f => {
+                html += `
+                <div class="card" onclick="playFilm(${f.id})">
+                    <img src="${f.thumbnailurl || getDefaultImg(f.genre)}" class="poster">
+                    <div class="info">
+                        <div class="title">${f.title}</div>
+                        <div class="rating">★ ${f.rating || '0.0'}</div>
+                    </div>
+                </div>
+                `;
+            });
+            
+            document.getElementById('search-results').innerHTML = `
+            <div style="margin-bottom:10px; color:#666;">
+                Hasil: ${results.length} film
+            </div>
+            <div class="scroll">${html || '<p>Tidak ditemukan</p>'}</div>
+            `;
+        }
+        
+        // ===== TAB NAVIGATION =====
+        function showTab(tab) {
+            // Hide all
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('admin-page').style.display = 'none';
+            document.getElementById('search-page').style.display = 'none';
+            
+            // Show selected
+            if (tab === 'home') {
+                document.getElementById('home-page').style.display = 'block';
+            } else if (tab === 'admin') {
+                document.getElementById('admin-page').style.display = 'block';
+            } else if (tab === 'search') {
+                document.getElementById('search-page').style.display = 'block';
+                searchFilm();
+            }
+            
+            // Update nav buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            event.target.classList.add('active');
+        }
+        
+        // ===== HELPER FUNCTIONS =====
+        function getDefaultImg(genre) {
+            const imgs = {
+                drama: 'https://images.unsplash.com/photo-1489599809516-9827b6d1cf13?w=120&h=160&fit=crop',
+                anime: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=120&h=160&fit=crop',
+                action: 'https://images.unsplash.com/photo-1533616688419-b7a585564f70?w=120&h=160&fit=crop',
+                romance: 'https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?w=120&h=160&fit=crop'
+            };
+            return imgs[genre] || 'https://via.placeholder.com/120x160/222/fff?text=FILM';
+        }
+        
+        function getDummyFilms() {
+            return [
+                {id:1, title:'Cattatan Penebusan', genre:'drama', rating:'8.5', year:'2024'},
+                {id:2, title:'DUKA BARU DUKA LAMA', genre:'drama', rating:'7.8', year:'2024'},
+                {id:3, title:'Serangan Balik', genre:'action', rating:'8.2', year:'2024'},
+                {id:4, title:'Murid Miskin Terkaya', genre:'drama', rating:'8.7', year:'2024'},
+                {id:5, title:'Melodi Penyatu', genre:'romance', rating:'8.4', year:'2024'},
+                {id:6, title:'Naruto Shippuden', genre:'anime', rating:'9.0', year:'2024'},
+                {id:7, title:'Demon Slayer', genre:'anime', rating:'9.2', year:'2024'},
+                {id:8, title:'Cinta Pahit', genre:'romance', rating:'7.9', year:'2023'}
+            ];
+        }
+        
+        function playFilm(id) {
+            alert('Memutar film ID: ' + id);
+            // Simpan ke localStorage untuk player
+            const film = films.find(f => f.id == id);
+            if (film) localStorage.setItem('film', JSON.stringify(film));
+        }
+        
+        // ===== INIT =====
+        window.onload = function() {
+            loadFilms();
+            showTab('home');
+        };
+    </script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
